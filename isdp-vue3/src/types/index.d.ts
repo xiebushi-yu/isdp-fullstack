@@ -29,23 +29,21 @@ export interface LoginUser {
   password: string
 }
 
-// 在 @/types 文件中定义
 export interface EnterItemForm {
-  itemSn: string // 商品编码
-  quantity: number // 数量
+  itemSn: string
+  quantity: number
 }
 
 export interface MakePaymentForm {
-    cashTendered: number;  // 付款金额
+  cashTendered: number
 }
 
 export interface Sale {
   saleId?: number
   saleNo?: string
   total: number
-  totalQuantity: number // 新增字段
+  totalQuantity: number
   saleItems: SaleItem[]
-  // 其他字段...
 }
 
 export interface SaleItem {
@@ -53,5 +51,4 @@ export interface SaleItem {
   productName: string
   price: number
   quantity: number
-  // 其他字段...
 }

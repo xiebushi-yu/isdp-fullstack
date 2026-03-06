@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- 查询表单 -->
     <el-form :model="queryParams" ref="queryRef" :inline="true" style="margin-bottom: 16px">
       <el-form-item label="编码" prop="productSn">
         <el-input
@@ -63,6 +62,7 @@
         <el-button type="warning" plain @click="handleExport">导出</el-button>
       </el-col>
     </el-row>
+
     <el-row :gutter="20" style="margin-top: 10px">
       <el-table
         :data="processedProductList"
@@ -89,7 +89,6 @@
         <el-table-column prop="price" label="价格" align="center" width="100">
           <template #default="scope"> ¥{{ scope.row.price }} </template>
         </el-table-column>
-        <!-- 操作列 -->
         <el-table-column
           label="操作"
           align="center"
@@ -114,7 +113,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 数据展示区：分页加载 -->
       <el-pagination
         style="margin-top: 20px"
         v-model:current-page="queryParams.pageNum"
@@ -128,12 +126,10 @@
       </el-pagination>
     </el-row>
 
-    <!-- 新增/修改对话框 -->
     <el-dialog v-model="dialogOpen" :title="title" width="600px" :before-close="handleCloseDiaglog">
       <product-form :product-id="selectedId" />
     </el-dialog>
 
-    <!-- 查看抽屉 -->
     <el-drawer v-model="drawerOpen" title="查看商品数据" direction="rtl" size="50%">
       <el-descriptions :column="4" :model="viewProduct" border>
         <el-descriptions-item label="商品ID">{{ viewProduct.productId }}</el-descriptions-item>
@@ -159,18 +155,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import ProductForm from '@/components/ProductForm.vue'
-import {
-  listProduct,
-  getProductById,
-  deleteProduct,
-  listProductByPage,
-  deleteProductBatch,
-} from '@/api/product'
+import { getProductById, deleteProduct, listProductByPage, deleteProductBatch } from '@/api/product'
 import { listCategory } from '@/api/category'
-import type { FormInstance } from 'element-plus'
 import type { Product } from '@/types'
 
 interface UnifiedProduct {
@@ -192,7 +181,6 @@ const rawProductList = ref<any[]>([])
 const parentCategoryOptions = ref<any[]>([])
 const categoryOptions = ref<any[]>([])
 
-// 查询参数 - 修改为包含分页参数
 const queryParams = ref({
   pageNum: 1,
   pageSize: 10,
@@ -200,10 +188,9 @@ const queryParams = ref({
   productName: '',
   productCategoryId: undefined as number | undefined,
 })
-const total = ref<number>(0) // table数据总数
-const queryRef = ref()
 
-// 查看抽屉相关
+const total = ref<number>(0)
+const queryRef = ref()
 const viewProduct = ref<UnifiedProduct>({} as UnifiedProduct)
 
 onMounted(() => {
@@ -211,14 +198,12 @@ onMounted(() => {
   getCategoryList()
 })
 
-// 获取商品列表并进行格式统一处理
-// 获取商品列表并进行格式统一处理 - 修改为分页查询
 function getProductList() {
   loading.value = true
   listProductByPage(queryParams.value)
     .then((res) => {
       console.log('分页数据:', res.data)
-      rawProductList.value = res.data.list || res.data.records || res.data // 适配不同后端返回格式
+      rawProductList.value = res.data.list || res.data.records || res.data
       total.value = res.data.total
       loading.value = false
     })
@@ -239,17 +224,13 @@ function getCategoryList() {
     })
 }
 
-// 处理数据格式，统一两种数据源的字段
 const processedProductList = computed<UnifiedProduct[]>(() => {
   return rawProductList.value
     .map((item) => {
-      // 处理编码字段：兼容productCode(Mock)和productSn(后端)
       const productSn = item.productSn || item.productCode || ''
 
-      // 处理类别ID：兼容categoryId(Mock)和productCategoryId(后端)
       const productCategoryId = item.productCategoryId || item.categoryId || 0
 
-      // 处理类别名称：兼容直接字段和嵌套对象
       let categoryName = item.categoryName || ''
       if (!categoryName && item.category && item.category.categoryName) {
         categoryName = item.category.categoryName
@@ -265,13 +246,12 @@ const processedProductList = computed<UnifiedProduct[]>(() => {
     .sort((a, b) => a.productId - b.productId)
 })
 
-/** ------------------数据展示区：数据选择-------------------- */
+// 以下为数据展示区
 
-const ids = ref<number[]>([]) // 表单勾选的id
-const single = ref<boolean>(false) // 勾选1个
-const multiple = ref<boolean>(false) // 勾选多个
+const ids = ref<number[]>([])
+const single = ref<boolean>(false)
+const multiple = ref<boolean>(false)
 
-// 数据展示区--> 勾选数据
 function handleSelectionChange(selection: Product[]) {
   ids.value = selection
     .map((item: Product) => item.productId)
@@ -280,7 +260,6 @@ function handleSelectionChange(selection: Product[]) {
   multiple.value = selection.length >= 1
 }
 
-/** 新增按钮 */
 const dialogOpen = ref(false)
 const title = ref('')
 const selectedId = ref<number | undefined>()
@@ -290,7 +269,6 @@ function handleAdd() {
   dialogOpen.value = true
 }
 
-/** 修改按钮 */
 function handleUpdate(row: Product) {
   ElMessage.success('修改操作,勾选的数据id为:' + ids.value.join(','))
   title.value = '修改商品'
@@ -298,15 +276,11 @@ function handleUpdate(row: Product) {
   dialogOpen.value = true
 }
 
-/** 提交表单后关闭对话框——刷新列表 */
 function handleCloseDiaglog() {
   dialogOpen.value = false
   getProductList()
 }
 
-/** ------------------数据删除操作-------------------- */
-
-/** 删除单条数据 */
 function handleDelete(row: Product) {
   ElMessageBox.confirm('是否删除编号为' + row.productId + '的数据?', '警告')
     .then(() => {
@@ -320,7 +294,6 @@ function handleDelete(row: Product) {
     })
 }
 
-/** 批量删除按钮 */
 function handleBatchDelete() {
   ElMessageBox.confirm('是否删除编号为' + ids.value + '的数据?', '警告')
     .then(() => {
@@ -336,7 +309,6 @@ function handleExport() {
   ElMessage.info('导出数据')
 }
 
-// 查询逻辑 - 分页查询
 function handleQuery() {
   queryParams.value.pageNum = 1
   loading.value = true
@@ -384,33 +356,27 @@ function resetQuery() {
   if (queryRef.value) {
     queryRef.value.resetFields()
   }
-  // 重置分页参数
   queryParams.value.pageNum = 1
   queryParams.value.pageSize = 10
   getProductList()
 }
 
-/** ------------------数据展示区：分页加载-------------------- */
-// 分页--> 修改每页数据数（5｜10｜20｜30）
 function handleSizeChange(val: number) {
   queryParams.value.pageSize = val
-  queryParams.value.pageNum = 1 // 切换页大小时回到第一页
+  queryParams.value.pageNum = 1
   getProductList()
 }
 
-// 分页--> 修改当前页
 function handleCurrentChange(val: number) {
   queryParams.value.pageNum = val
   getProductList()
 }
 
-// 查看商品详情（统一格式）
 async function handleView(row: UnifiedProduct) {
   try {
     const res = await getProductById(row.productId)
     const rawData = res.data
 
-    // 统一详情数据格式
     viewProduct.value = {
       ...rawData,
       productSn: rawData.productSn || rawData.productCode || '',

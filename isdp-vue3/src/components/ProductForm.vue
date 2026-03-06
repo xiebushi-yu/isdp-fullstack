@@ -101,7 +101,6 @@ const form = toRef(product)
 const ruleFormRef = ref<FormInstance>()
 const categoryOptions = ref<Category[]>([])
 
-// 表单校验规则
 const rules = reactive<FormRules<Product>>({
   productName: [
     { required: true, message: '请输入商品名称', trigger: 'blur' },
@@ -118,7 +117,6 @@ const rules = reactive<FormRules<Product>>({
   productCategoryId: [{ required: true, message: '请选择商品分类', trigger: 'change' }],
 })
 
-// 重置表单
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
@@ -141,14 +139,12 @@ watch(
   { immediate: true },
 )
 
-// 获取类别下拉框列表
 const getCategoryOptions = () => {
   listCategory().then((res) => {
     categoryOptions.value = res.data
   })
 }
 
-// 提交表单
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
@@ -174,7 +170,6 @@ function close() {
   emit('close')
 }
 
-// 上传图片
 const uploadImage = (type: 'image' | 'detail') => {}
 </script>
 

@@ -1,21 +1,17 @@
 import Mock from 'mockjs'
 
-// 定义 Mock 请求的参数类型（包含 body、headers 等）
 interface MockRequest {
   body?:
     | string
     | {
-        // POST 请求的 body 数据
         userName?: string
         password?: string
       }
   headers?: {
-    // 请求头
     token?: string
   }
 }
 
-/** 静态指定mock数据 */
 function createStaticUserList() {
   return [
     {
@@ -37,14 +33,12 @@ function createStaticUserList() {
   ]
 }
 
-/** 配置Mock接口 */
 export default [
   // {
   //   url: '/api/user/login',
   //   method: 'post',
-  //   // 为 body 添加类型注解（从 MockRequest 中解构）
   //   response: ({ body }: MockRequest) => {
-  //     const { userName, password } = body || {} // 避免 body 为 undefined
+  //     const { userName, password } = body || {}
   //     console.log('登录请求数据:', { userName, password })
 
   //     const user = createStaticUserList().find(
@@ -66,9 +60,7 @@ export default [
     response: (request: MockRequest) => {
       let userName, password
 
-      // 尝试不同的方式解析 body 数据
       if (typeof request.body === 'string') {
-        // 如果 body 是字符串，尝试解析 JSON
         try {
           const parsedBody = JSON.parse(request.body)
           userName = parsedBody.userName
@@ -77,7 +69,6 @@ export default [
           console.log('解析JSON失败:', e)
         }
       } else if (typeof request.body === 'object') {
-        // 如果 body 已经是对象
         userName = request.body?.userName
         password = request.body?.password
       }
@@ -102,9 +93,8 @@ export default [
   {
     url: '/api/user/info',
     method: 'get',
-    // 为 request 添加类型注解
     response: (request: MockRequest) => {
-      const token = request.headers?.token // 使用可选链避免 headers 为 undefined
+      const token = request.headers?.token
       const user = createStaticUserList().find((item) => item.token === token)
       if (!user) {
         return { code: 201, msg: '查询用户信息失败', data: {} }

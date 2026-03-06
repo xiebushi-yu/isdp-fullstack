@@ -1,45 +1,45 @@
 // @/api/category.ts
 import request from '@/utils/request'
-import type { Category } from '@/types' // 假设定义了Category类型
+import type { Category } from '@/types'
 
-// 1. 根据ID查询类别详情（对应后端 @GetMapping("/{categoryId}")）
+// 根据ID查询类别详情
 export function getCategoryById(categoryId: number) {
   return request({
-    url: `/category/${categoryId}`, // 对应后端路径
+    url: `/category/${categoryId}`,
     method: 'get',
   })
 }
 
-// 2. 获取所有类别列表（对应后端 @GetMapping("/listAll")）
+// 获取所有类别列表
 export function listCategory() {
   return request({
-    url: '/category/listAll', // 修正路径为listAll
+    url: '/category/listAll',
     method: 'get',
   })
 }
 
-// 3. 新增类别（对应后端 @PostMapping("/add")）
+// 新增
 export function addCategory(data: Category) {
   return request({
-    url: '/category/add', // 修正路径为add
+    url: '/category/add',
     method: 'post',
-    data, // 传递Category对象
+    data,
   })
 }
 
-// 4. 修改类别（对应后端 @PutMapping("/update")）
+// 修改
 export function updateCategory(data: Category) {
   return request({
-    url: '/category/update', // 修正路径为update
+    url: '/category/update',
     method: 'put',
-    data, // 传递Category对象
+    data,
   })
 }
 
-// 5. 删除类别（对应后端 @DeleteMapping("/{categoryId}")）
+// 删除
 export function deleteCategory(categoryId: number) {
   return request({
-    url: `/category/${categoryId}`, // 对应后端路径
+    url: `/category/${categoryId}`,
     method: 'delete',
   })
 }

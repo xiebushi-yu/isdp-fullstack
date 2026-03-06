@@ -7,19 +7,17 @@ export function makeNewSale() {
     method: 'get',
   })
 }
-// 录入订单明细 - 返回完整的Sale对象
+// 录入订单明细
 export function enterItem(params: EnterItemForm) {
   return request<Sale>({
-    // 添加泛型类型
     url: '/sale/enterItem',
     method: 'post',
     params: params,
   })
 }
-// 结束录入 - 返回完整的Sale对象
+// 结束录入
 export function endSale() {
   return request<Sale>({
-    // 添加泛型类型
     url: '/sale/endSale',
     method: 'get',
   })

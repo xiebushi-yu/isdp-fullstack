@@ -9,7 +9,7 @@ export function getProductById(productId: number) {
   })
 }
 
-// 根据产品SN查询产品
+// 根据SN查询产品
 export function getProductBySn(productSn: string) {
   return request({
     url: `/product/getBySn/${productSn}`,
@@ -50,7 +50,7 @@ export function listProductByPage(query: ProductQueryParams) {
   })
 }
 
-// 新增产品
+// 新增
 export function addProduct(data: any) {
   return request({
     url: '/product/add',
@@ -59,7 +59,7 @@ export function addProduct(data: any) {
   })
 }
 
-// 修改产品
+// 修改
 export function updateProduct(data: any) {
   return request({
     url: '/product/update',
@@ -68,7 +68,7 @@ export function updateProduct(data: any) {
   })
 }
 
-// 删除产品
+// 删除
 export function deleteProduct(productId: number) {
   return request({
     url: `/product/delete/${productId}`,

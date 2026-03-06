@@ -41,7 +41,6 @@
     </el-row>
 
     <el-dialog v-model="dialogOpen" :title="title" width="500">
-      <!-- 也可以写成 <CateogryForm /> -->
       <category-form :category-id="categoryId" />
     </el-dialog>
   </div>
@@ -52,7 +51,6 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
 import CategoryForm from '@/components/CategoryForm.vue'
-// 导入api接口
 import { listCategory } from '@/api/category'
 onMounted(() => {
   getCategoryList()
@@ -65,32 +63,28 @@ interface Category {
 }
 const categoryList = ref<Category[]>([])
 
-const dialogOpen = ref(false) // 对话框 v-model
-const title = ref('') // 对话框 v-bind
+const dialogOpen = ref(false)
+const title = ref('')
 
 const categoryId = ref(0)
 
-/** 获取类别列表 */
 function getCategoryList() {
   listCategory().then((res) => {
     categoryList.value = res.data
   })
 }
 
-/** 新增按钮 */
 function handleAdd() {
   dialogOpen.value = true
   title.value = '新增类别'
 }
 
-/** 修改按钮 */
 function handleUpdate(row: Category) {
   categoryId.value = row.categoryId
   dialogOpen.value = true
   title.value = '修改类别'
 }
 
-/** 删除按钮 */
 function handleDelete() {
   ElMessageBox.confirm('是否删除数据?', '警告', {
     confirmButtonText: '是',
@@ -108,7 +102,6 @@ function handleDelete() {
     })
 }
 
-/** 导出按钮 */
 function handleExport() {
   ElMessage({ type: 'info', message: '导出数据' })
 }

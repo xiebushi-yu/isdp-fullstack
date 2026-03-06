@@ -1,48 +1,39 @@
-# isdp-vue3
+# 项目名称：便利店 POS 系统 - 前端
 
-This template should help get you started developing with Vue 3 in Vite.
+## 项目简介
 
-## Recommended IDE Setup
+这是一个基于 Vue 3 + TypeScript 的前端课程设计，实现了用户登录、商品管理、销售管理等核心功能（根据你的实际情况写）。
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## 技术栈
 
-## Recommended Browser Setup
+- Vue 3
+- TypeScript
+- Pinia（状态管理）
+- Vue Router
+- Vite
+- Element Plus / 其他 UI 库（如果有）
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## 功能模块
 
-## Type Support for `.vue` Imports in TS
+- 用户登录/注册
+- 商品列表展示
+- 商品查询
+- 销售
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## 如何本地运行
 
-## Customize configuration
+1. 克隆项目
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+   ```bash
+   git clone https://github.com/xiebushi-yu/isdp-fullstack.git
 
-## Project Setup
+   ```
 
-```sh
-pnpm install
-```
+2. 前端启动
+   cd isdp-vue3
 
-### Compile and Hot-Reload for Development
+3. 安装依赖
+   pnpm install
 
-```sh
-pnpm dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-pnpm build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+4. 启动开发服务器
+   pnpm dev

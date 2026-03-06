@@ -1,6 +1,5 @@
 <template>
   <div class="cashier-container">
-    <!-- 顶部流程导航 -->
     <div class="process-nav">
       <el-steps :active="4" align-center finish-status="success" class="custom-steps">
         <el-step title="MakeNewSale" />
@@ -10,11 +9,9 @@
       </el-steps>
     </div>
 
-    <!-- 左右布局容器 -->
     <div class="layout-container">
       <!-- 左侧区域 -->
       <div class="left-panel">
-        <!-- 商品录入卡片 -->
         <el-card class="card-item">
           <template #header>
             <div class="card-header">商品录入</div>
@@ -52,7 +49,6 @@
           </el-form>
         </el-card>
 
-        <!-- 订单支付卡片 -->
         <el-card class="card-item">
           <template #header>
             <div class="card-header">订单支付</div>
@@ -79,9 +75,7 @@
 
       <!-- 右侧区域 -->
       <div class="right-panel">
-        <!-- 订单信息头部 -->
         <div class="order-header">
-          <!-- 标题区域 -->
           <div class="header-top">
             <h2 class="header-title">订单信息</h2>
             <el-button
@@ -155,26 +149,22 @@
             :row-class-name="tableRowClassName"
           >
             <el-table-column type="index" label="序号" align="center" />
-            <!-- 商品编码 -->
             <el-table-column label="商品编码" align="center">
               <template #default="scope">
                 {{ scope.row.itemSn }}
               </template>
             </el-table-column>
 
-            <!-- 商品名称 -->
             <el-table-column label="商品名称" align="center">
               <template #default="scope">
                 {{ scope.row.productName }}
               </template>
             </el-table-column>
 
-            <!-- 销售价格 -->
             <el-table-column label="销售价格" align="center">
               <template #default="scope"> ¥{{ scope.row.price.toFixed(2) }} </template>
             </el-table-column>
 
-            <!-- 订购数量 -->
             <el-table-column prop="quantity" label="订购数量" align="center">
               <template #default="scope">
                 <el-input-number
@@ -203,7 +193,6 @@
             </el-table-column>
           </el-table>
 
-          <!-- 表格汇总行 -->
           <template #footer>
             <div class="table-summary">
               总件数: {{ totalQuantity }} 件 | 总金额: {{ totalAmount }} 元
@@ -228,33 +217,26 @@ import {
 import type { Sale, SaleItem } from '@/types'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-// 商品录入表单
 const productForm = reactive({
   itemSn: '',
   quantity: 1,
 })
 
-// 支付表单
 const paymentForm = reactive({
   paidAmount: '',
   change: '0',
 })
-
-// 表格数据
-// 表格数据 - 初始为空数组
 const tableData = ref<SaleItem[]>([])
-// 总金额和总数量 - 初始为0
 const totalAmount = ref(0)
 const totalQuantity = ref(0)
-// 销售流程状态
 const saleStatus = ref({
-  hasNewSale: false, // 是否已新建销售
-  hasItems: false, // 是否已录入商品
-  hasEndedSale: false, // 是否已结束销售
-  hasPaid: false, // 是否已支付
+  hasNewSale: false,
+  hasItems: false,
+  hasEndedSale: false,
+  hasPaid: false,
 })
 
-//重置所有状态
+//重置状态
 const resetAllStatus = () => {
   saleStatus.value = {
     hasNewSale: false,
@@ -272,13 +254,12 @@ const resetAllStatus = () => {
   paymentForm.change = '0'
 }
 
-// 按钮禁用状态（基于状态计算）
+//依据状态看是否禁用按钮
 const isNewSaleDisabled = ref(false)
 const isEnterItemDisabled = computed(() => !saleStatus.value.hasNewSale)
 const isEndSaleDisabled = computed(() => !saleStatus.value.hasItems)
 const isMakePaymentDisabled = computed(() => !saleStatus.value.hasEndedSale)
 
-// 表格行样式
 const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
   if (rowIndex % 4 === 0) return 'row-orange'
   if (rowIndex % 4 === 1) return 'row-blue'
@@ -286,14 +267,11 @@ const tableRowClassName = ({ rowIndex }: { rowIndex: number }) => {
   return 'row-green'
 }
 
-// ==================== 统一更新函数 ====================
-
 /**
  * 根据后端返回的Sale对象更新前端所有状态
  * @param sale 后端返回的完整Sale对象
  */
 const updateFrontendFromSale = (sale: Sale) => {
-  // 1. 更新表格数据
   tableData.value = (sale.saleItems || []).map((item: any) => {
     const product = item.product || {}
     return {
@@ -305,27 +283,14 @@ const updateFrontendFromSale = (sale: Sale) => {
     }
   })
 
-  // 2. 更新总金额和总数量
   totalAmount.value = sale.total || 0
   totalQuantity.value = sale.totalQuantity || 0
 
-  // 3. 更新销售状态
   saleStatus.value.hasItems = tableData.value.length > 0
-}
-
-/**
- * 重置所有表单状态
- */
-const resetFormStates = () => {
-  productForm.itemSn = ''
-  productForm.quantity = 1
-  paymentForm.paidAmount = ''
-  paymentForm.change = '0'
 }
 
 // 处理商品录入
 const handleEnterItem = async () => {
-  // 1. 表单校验（已添加）
   if (!productForm.itemSn || productForm.itemSn.trim() === '') {
     ElMessage.error('请输入商品编码')
     return
@@ -342,13 +307,10 @@ const handleEnterItem = async () => {
       quantity: productForm.quantity,
     })
 
-    // 用后端返回的完整数据更新前端状态
     updateFrontendFromSale(response.data)
 
-    // 更新状态：已录入商品
     saleStatus.value.hasItems = true
 
-    // 重置表单数量
     productForm.quantity = 1
 
     ElMessage.success('商品录入成功')
@@ -364,20 +326,17 @@ const handleEnterItem = async () => {
 
     const { status, data } = error.response
 
-    // 3. 其他400系列错误
     if (status >= 400 && status < 500) {
       const errorMsg = data?.message || '输入有误，请检查商品编码和数量'
       ElMessage.error(errorMsg)
       return
     }
 
-    // 4. 500服务器错误
     if (status >= 500) {
       ElMessage.error('服务器错误，请稍后重试')
       return
     }
 
-    // 5. 其他未知错误
     ElMessage.error('录入商品失败，请重试')
   }
 }
@@ -388,10 +347,8 @@ const handleEndSale = async () => {
     const response = await endSale()
     const sale = response.data
 
-    // 更新前端状态
     updateFrontendFromSale(response.data)
 
-    // 更新状态：已结束销售
     saleStatus.value.hasEndedSale = true
 
     ElMessage.success('销售结束，请进行支付')
@@ -404,13 +361,11 @@ const handleEndSale = async () => {
 
 // 处理支付
 const handleMakePayment = async () => {
-  // 1. 表单校验
   if (!paymentForm.paidAmount || paymentForm.paidAmount.trim() === '') {
     ElMessage.error('请输入付款金额')
     return
   }
 
-  // 2. 金额格式校验
   const paidAmount = parseFloat(paymentForm.paidAmount)
   if (isNaN(paidAmount)) {
     ElMessage.error('请输入有效的数字金额')
@@ -421,8 +376,7 @@ const handleMakePayment = async () => {
     ElMessage.error('付款金额必须大于0')
     return
   }
-
-  // 3. 逻辑校验：付款金额必须大于等于总金额 ✅ 新增
+  //金额不足时
   if (paidAmount < totalAmount.value) {
     ElMessage.error(
       `付款金额不足！总金额为 ${totalAmount.value} 元，还需支付 ${totalAmount.value - paidAmount} 元`,
@@ -430,10 +384,8 @@ const handleMakePayment = async () => {
     return
   }
 
-  // 4. 可选：显示确认对话框
   const change = paidAmount - totalAmount.value
   if (change > 0) {
-    // 如果需要找零，显示确认信息
     const confirmMessage = `收款：${paidAmount}元，找零：${change}元，确认支付吗？`
     try {
       await ElMessageBox.confirm(confirmMessage, '确认支付', {
@@ -442,21 +394,18 @@ const handleMakePayment = async () => {
         type: 'warning',
       })
     } catch {
-      // 用户点击取消 - 这里不需要参数名
       ElMessage.info('已取消支付')
       return
     }
   }
 
   try {
-    // 调用支付API
     const response = await makePayment({
       cashTendered: paidAmount,
     })
 
     const change = response.data
 
-    // 更新状态：已支付
     saleStatus.value.hasPaid = true
 
     paymentForm.change = change.toString()
@@ -468,7 +417,6 @@ const handleMakePayment = async () => {
     ElMessage.error('支付失败，请重试')
   }
 
-  // 重置所有状态
   resetAllStatus()
 }
 
@@ -478,12 +426,10 @@ const handleMakeNewSale = async () => {
     const response = await makeNewSale()
     const sale = response.data
 
-    // 重置所有状态
     resetAllStatus()
 
-    // 更新销售状态
     saleStatus.value = {
-      hasNewSale: true, // 新建销售成功
+      hasNewSale: true,
       hasItems: false,
       hasEndedSale: false,
       hasPaid: false,
@@ -498,7 +444,6 @@ const handleMakeNewSale = async () => {
 }
 
 // 处理删除商品
-// 删除商品处理函数
 const handleDeleteItem = async (itemSn: string) => {
   console.log('=== 开始删除操作 ===')
   console.log('要删除的商品编码:', itemSn)
@@ -509,7 +454,6 @@ const handleDeleteItem = async (itemSn: string) => {
     return
   }
 
-  // 确认对话框
   try {
     await ElMessageBox.confirm(`确定要删除商品编码为 ${itemSn} 的商品吗？`, '删除确认', {
       confirmButtonText: '确定',
@@ -530,7 +474,6 @@ const handleDeleteItem = async (itemSn: string) => {
     const sale = response.data
     console.log('删除后返回的sale对象:', sale)
 
-    // ✅ 使用统一更新函数
     updateFrontendFromSale(sale)
 
     ElMessage.success('删除成功')
@@ -543,7 +486,6 @@ const handleDeleteItem = async (itemSn: string) => {
     console.error('响应消息:', error.response?.data?.message)
     console.error('错误消息:', error.message)
 
-    // 错误处理
     if (error.response?.status === 404) {
       ElMessage.error(`商品编码 "${itemSn}" 不存在或已被删除`)
     } else if (error.message) {
@@ -554,8 +496,6 @@ const handleDeleteItem = async (itemSn: string) => {
   }
 }
 
-// 数量修改处理函数
-// 最简数量修改处理函数
 const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   if (!itemSn || newQuantity < 1) return
 
@@ -569,14 +509,10 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   } catch (error: any) {
     console.error('更新数量失败:', error)
 
-    // 简单错误提示
     ElMessage.error('数量修改失败')
 
-    // 恢复原来的数量显示（需要找到对应的商品）
     const item = tableData.value.find((item) => item.itemSn === itemSn)
     if (item) {
-      // 需要知道原始数量，这里简化处理
-      // 实际上可以保存原始数量或从错误响应中获取
     }
   }
 }
@@ -589,8 +525,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   min-height: 100vh;
   font-size: 20px;
 }
-
-/* 流程导航样式 */
 
 .process-nav {
   margin-bottom: 20px;
@@ -617,7 +551,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   color: white;
 }
 
-/* 布局样式 */
 .layout-container {
   display: flex;
   gap: 20px;
@@ -643,7 +576,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   font-size: 20px;
 }
 
-/* 紧凑表单样式 */
 .compact-form {
   flex: 1;
   display: flex;
@@ -662,13 +594,11 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   gap: 5px;
 }
 
-/* 自定义选择框和输入框 */
 .custom-select,
 .custom-input {
   width: 100%;
 }
 
-/* 紧凑数字输入框样式 */
 .compact-input-number {
   width: 120px;
 }
@@ -680,7 +610,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   border-left: 1px solid #dcdfe6;
 }
 
-/* 按钮样式 */
 .enter-item-btn {
   background-color: #a0cfff;
   border-color: #a0cfff;
@@ -719,7 +648,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   flex: 1;
 }
 
-/* 订单头部样式 */
 .order-header {
   display: flex;
   gap: 20px;
@@ -728,7 +656,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   border-bottom: 1px solid #dedede;
 }
 
-/* 顶部标题区域 */
 .header-top {
   display: flex;
   justify-content: space-between;
@@ -778,18 +705,16 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
 .label-content {
   display: flex;
   align-items: center;
-  gap: 8px; /* 图标和文字之间的间距 */
-  padding: 4px 0; /* 标签区域的上下内边距 */
+  gap: 8px;
+  padding: 4px 0;
 }
 
-/* 表格样式 */
 .table-card {
   margin-top: 20px;
   border: 1px solid #e4e7ed;
   border-radius: 6px;
 }
 
-/* 表格行交替背景色 */
 :deep(.row-orange) {
   background-color: #fff9f0 !important;
 }
@@ -806,7 +731,6 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   background-color: #ecf5ff !important;
 }
 
-/* 删除按钮样式 */
 .delete-button {
   color: #409eff;
   padding: 4px 8px;
@@ -817,14 +741,13 @@ const handleQuantityChange = async (itemSn: string, newQuantity: number) => {
   background-color: transparent;
 }
 
-/* 表格汇总行样式 */
 .table-summary {
   background-color: white;
   border-radius: 4px;
   color: #303133;
 }
 
-/* 响应式设计 */
+/* 小屏幕适配 */
 @media (max-width: 768px) {
   .layout-container {
     flex-direction: column;
