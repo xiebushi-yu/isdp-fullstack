@@ -8,13 +8,11 @@ import { ElMessage } from 'element-plus'
 import errorCode from '@/utils/errorCode'
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
-// 创建axios实例
 const service: AxiosInstance = axios.create({
   baseURL: '/api',
   timeout: 10000,
 })
 
-// 请求拦截器
 service.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     return config
@@ -25,7 +23,6 @@ service.interceptors.request.use(
   },
 )
 
-// 响应拦截器
 service.interceptors.response.use(
   (res: AxiosResponse) => {
     const code = res.data.code || 200
