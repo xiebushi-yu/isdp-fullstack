@@ -2,16 +2,16 @@
 
 ## 项目简介
 
-这是一个基于 Vue 3 + TypeScript 的前端课程设计，实现了用户登录、商品管理、销售管理等核心功能（根据你的实际情况写）。
+这是一个基于 Vue 3 + TypeScript 的前端课程设计，实现了用户登录、商品管理、销售管理等核心功能。
 
 ## 技术栈
 
 - Vue 3
 - TypeScript
-- Pinia（状态管理）
+- Pinia
 - Vue Router
 - Vite
-- Element Plus / 其他 UI 库（如果有）
+- Element Plus 
 
 ## 功能模块
 
