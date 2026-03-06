@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.mis.pos.mapper.ISaleItemMapper">
+
+    <resultMap id="saleItemResultMap" type="SaleItem">
+        <id property="saleItemId" column="sale_item_id"/>
+        <result property="saleId"    column="sale_id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="price"    column="price"    />
+        <result property="quantity"    column="quantity"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <association property="product" javaType="Product" column="product_id">
+            <id property="productId"    column="product_id"    />
+            <result property="productSn"    column="product_sn"    />
+            <result property="productName"    column="product_name"    />
+            <result property="productDescription"    column="product_description"    />
+            <result property="price"    column="product_price"    />
+            <result property="productCategoryId"    column="product_category_id"    />
+            <result property="imageUrl"    column="image_url"    />
+            <result property="detailUrl"    column="detail_url"    />
+        </association>
+    </resultMap>
+
+    <sql id="selectPosSaleItemVo">
+        SELECT si.sale_item_id,si.sale_id,si.product_id,si.price,si.quantity,si.status,si.create_by,si.create_time,si.update_by,si.update_time,
+               p.product_id,p.product_sn,p.product_name,p.product_description,p.price as product_price,p.product_category_id,p.image_url,p.detail_url
+        FROM pos_sale_item si
+                 LEFT JOIN pos_product p ON p.product_id = si.product_id
+    </sql>
+
+    <!--根据id查询订单明细对象-->
+    <select id="selectSaleItemById" parameterType="Long" resultMap="saleItemResultMap">
+        <include refid="selectPosSaleItemVo"/>
+        WHERE si.sale_item_id = #{saleItemId}
+    </select>
+    <!--查询订单明细列表-->
+    <select id="selectSaleItemList" parameterType="SaleItem" resultMap="saleItemResultMap">
+        <include refid="selectPosSaleItemVo"/>
+        <where>
+            <if test="saleItemId != null  and saleItemId != ''"> and si.sale_item_id = #{saleItemId}</if>
+            <if test="saleId != null  and saleId != ''"> and si.sale_id = #{saleId}</if>
+            <if test="productId != null  and  productId != ''"> and si.product_id = #{productId}</if>
+        </where>
+    </select>
+    <!-- 新增订单明细对象 -->
+    <insert id="insertSaleItem" parameterType="SaleItem" useGeneratedKeys="true" keyProperty="saleItemId">
+        INSERT INTO pos_sale_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="saleId != null">sale_id,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="price != null">price,</if>
+            <if test="quantity != null">quantity,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="saleId != null">#{saleId},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="price != null">#{price},</if>
+            <if test="quantity != null">#{quantity},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+    <!--更新订单对象-->
+    <update id="updateSaleItem" parameterType="SaleItem">
+        UPDATE pos_sale_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="saleId != null">sale_id = #{saleId},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="quantity != null">quantity = #{quantity},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        WHERE sale_item_id = #{saleItemId}
+    </update>
+
+    <!--  批量新增订单明细  -->
+    <insert id="batchInsertSaleItemOfCurrentSale">
+        INSERT INTO pos_sale_item(sale_item_id, sale_id, product_id, price, quantity, status, del_flag, create_by, create_time)
+        VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.saleItemId},#{item.saleId}, #{item.productId}, #{item.price}, #{item.quantity}, #{item.status}, #{item.delFlag}, #{item.createBy}, #{item.createTime})
+        </foreach>
+    </insert>
+
+</mapper>

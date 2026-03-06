@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.scau.mis.pos.mapper.ISaleMapper">
+    <resultMap type="Sale" id="saleResultMap">
+        <id property="saleId"    column="sale_id"    />
+        <result property="saleNo"    column="sale_no"    />
+        <result property="total"    column="total"    />
+        <result property="saleTime"    column="sale_time"    />
+        <result property="status"    column="status"    />
+        <result property="paymentId"    column="payment_id"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <collection property="saleItems" javaType="java.util.List" ofType="SaleItem" column="sale_id">
+            <result property="saleItemId" column="sale_item_id"/>
+            <result property="saleId"    column="sale_id_fk"    />
+            <result property="productId"    column="product_id"    />
+            <result property="price"    column="price"    />
+            <result property="quantity"    column="quantity"    />
+            <result property="status"    column="sale_item_status"    />
+            <result property="delFlag"    column="sale_item_del_flag"    />
+        </collection>
+    </resultMap>
+
+    <sql id="selectPosSaleVo">
+        SELECT s.sale_id,s.sale_no,s.sale_time,s.total,s.payment_id,s.status,s.del_flag,s.create_by,s.create_time,s.update_by,s.update_time,
+               si.sale_item_id,si.sale_id as sale_id_fk,si.product_id,si.price,si.quantity,si.status as sale_item_status,si.del_flag as sale_item_del_flag
+        FROM pos_sale s
+                 LEFT JOIN pos_sale_item si ON si.sale_id = s.sale_id
+    </sql>
+
+    <!--根据id查询订单对象-->
+    <select id="selectSaleById" parameterType="Long" resultMap="saleResultMap">
+        <include refid="selectPosSaleVo"/>
+        WHERE s.sale_id = #{saleId}
+    </select>
+
+    <!--查询订单列表-->
+    <select id="selectSaleList" parameterType="Sale" resultMap="saleResultMap">
+        <include refid="selectPosSaleVo"/>
+        <where>
+            <if test="saleId != null  and saleId != ''"> and s.sale_id = #{saleId}</if>
+            <if test="saleNo != null  and saleNo != ''"> and s.sale_no = #{saleNo}</if>
+            <if test="status != null  and status != ''"> and s.status = #{status}</if>
+            <if test="paymentId != null  and  paymentId != ''"> and s.payment_id = #{paymentId}</if>
+        </where>
+    </select>
+
+    <!-- 新增订单对象 -->
+    <insert id="insertSale" parameterType="Sale" useGeneratedKeys="true" keyProperty="saleId">
+        INSERT INTO pos_sale
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="saleNo != null">sale_no,</if>
+            <if test="saleTime != null">sale_time,</if>
+            <if test="total != null">total,</if>
+            <if test="paymentId != null">payment_id,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="saleNo != null">#{saleNo},</if>
+            <if test="saleTime != null">#{saleTime},</if>
+            <if test="total != null">#{total},</if>
+            <if test="paymentId != null">#{paymentId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+    <!--更新订单对象-->
+    <update id="updateSale" parameterType="Sale">
+        UPDATE pos_sale
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="saleNo != null">sale_no = #{saleNo},</if>
+            <if test="saleTime != null">sale_time = #{saleTime},</if>
+            <if test="total != null">total = #{total},</if>
+            <if test="paymentId != null">payment_id = #{paymentId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        WHERE sale_id = #{saleId}
+    </update>
+
+</mapper>
