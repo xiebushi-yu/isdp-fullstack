@@ -30,10 +30,17 @@
    ```
 
 2. 前端启动
+   ```bash
    cd isdp-vue3
 
+   ```
+
 3. 安装依赖
+   ```bash
    pnpm install
+   ```
 
 4. 启动开发服务器
+   ```bash
    pnpm dev
+   ```
